@@ -1,34 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Exam } from './exam.entity';
+import { loadExams } from './exams.data';
 
 @Injectable()
 export class ExamsService {
-  constructor(
-    @InjectRepository(Exam)
-    private readonly examRepository: Repository<Exam>,
-  ) {}
-
-  async findAll() {
-    const exams = await this.examRepository.find({
-      relations: ['questions'],
-      order: { id: 'ASC' },
-    });
-
-    return exams.map((exam) => ({
+  findAll() {
+    return loadExams().map((exam) => ({
       id: exam.id,
       title: exam.title,
       description: exam.description,
-      questionCount: exam.questions?.length ?? 0,
+      questionCount: exam.questions.length,
     }));
   }
 
-  async findOne(id: number) {
-    const exam = await this.examRepository.findOne({
-      where: { id },
-      relations: ['questions'],
-    });
+  findOne(id: number) {
+    const exam = loadExams().find((e) => e.id === id);
 
     if (!exam) {
       throw new NotFoundException(`Exam with id ${id} not found`);

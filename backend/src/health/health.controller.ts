@@ -11,7 +11,7 @@ export class HealthController {
   @Get()
   @ApiOperation({ summary: 'Health check' })
   @ApiOkResponse({ type: HealthResponseDto })
-  check(): Promise<HealthResponseDto> {
+  check(): HealthResponseDto {
     return this.healthService.check();
   }
 }
