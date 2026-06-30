@@ -13,6 +13,26 @@ function formatCorrectAnswer(question: Question): string {
   return labels.map((label, i) => `${label}) ${texts[i]}`).join(', ');
 }
 
+export function formatQuestionForCopy(question: Question, questionNumber: number): string {
+  const lines: string[] = [
+    `Question ${questionNumber}:`,
+    question.text,
+    '',
+  ];
+
+  question.options.forEach((option, optionIndex) => {
+    const label = OPTION_LABELS[optionIndex] ?? String(optionIndex + 1);
+    lines.push(`${label}) ${option}`);
+  });
+
+  lines.push(`Answer: ${formatCorrectAnswer(question)}`);
+  if (question.explanation) {
+    lines.push(`Explanation: ${question.explanation}`);
+  }
+
+  return lines.join('\n').trim();
+}
+
 export function formatQuestionsForCopy(examTitle: string, questions: Question[]): string {
   const lines: string[] = [
     examTitle,
@@ -38,6 +58,13 @@ export function formatQuestionsForCopy(examTitle: string, questions: Question[])
   });
 
   return lines.join('\n').trim();
+}
+
+export async function copyQuestionToClipboard(
+  question: Question,
+  questionNumber: number,
+): Promise<void> {
+  await navigator.clipboard.writeText(formatQuestionForCopy(question, questionNumber));
 }
 
 export async function copyQuestionsToClipboard(

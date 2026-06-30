@@ -5,7 +5,7 @@ import { fetchExam, API_BASE } from '../api';
 import { markExamCompleted, isExamCompleted } from '../completion';
 import { rotateCacheAfterCompletion } from '../examCache';
 import { getExamProgress, saveExamProgress } from '../examProgress';
-import { copyQuestionsToClipboard, arraysEqual } from '../copyQuestions';
+import { copyQuestionToClipboard, arraysEqual } from '../copyQuestions';
 import type { Question } from '../types';
 
 const FONT = "'Plus Jakarta Sans', sans-serif";
@@ -157,9 +157,9 @@ export default function Quiz() {
     setRevealed(true);
   }
 
-  async function handleCopyQuestions() {
+  async function handleCopyQuestion() {
     try {
-      await copyQuestionsToClipboard(examTitle, questions);
+      await copyQuestionToClipboard(question, current + 1);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -220,11 +220,12 @@ export default function Quiz() {
             </div>
             <button
               type="button"
-              onClick={handleCopyQuestions}
-              className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
+              onClick={handleCopyQuestion}
+              aria-label={copied ? 'Copied' : 'Copy current question'}
+              title={copied ? 'Copied!' : 'Copy question'}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
             >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? 'Copied!' : 'Copy Q&A'}
+              {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
             </button>
             <button
               type="button"
@@ -232,10 +233,11 @@ export default function Quiz() {
                 persistProgress();
                 navigate('/exams');
               }}
-              className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-destructive transition-colors"
+              aria-label="Exit exam"
+              title="Exit"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-red-50 transition-colors"
             >
-              <Flag className="w-3.5 h-3.5" />
-              Exit
+              <Flag className="w-4 h-4" />
             </button>
           </div>
         </div>
