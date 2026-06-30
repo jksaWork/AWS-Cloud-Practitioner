@@ -31,7 +31,7 @@ export default function Score() {
 
   useEffect(() => {
     if (!state) {
-      navigate('/exams', { replace: true });
+      navigate('/dashboard', { replace: true });
     }
   }, [state, navigate]);
 
@@ -167,7 +167,7 @@ export default function Score() {
           </button>
           <button
             type="button"
-            onClick={() => navigate(`/quiz/${examId}`)}
+            onClick={() => navigate(`/quiz/${examId}?retry=1`)}
             className="flex items-center justify-center gap-2 py-3.5 bg-white border-2 border-primary text-primary rounded-xl font-bold text-sm hover:bg-blue-50 active:scale-[0.97] transition-all"
           >
             <RotateCcw className="w-4 h-4" />
@@ -175,12 +175,12 @@ export default function Score() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/exams')}
+            onClick={() => navigate('/dashboard')}
             className="flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm text-white active:scale-[0.97] transition-all"
             style={{ background: 'linear-gradient(135deg, #0056D2, #0041A8)' }}
           >
             <LayoutGrid className="w-4 h-4" />
-            All exams
+            Dashboard
           </button>
         </div>
 

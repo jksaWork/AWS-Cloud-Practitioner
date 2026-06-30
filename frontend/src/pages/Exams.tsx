@@ -19,11 +19,13 @@ import {
 } from 'lucide-react';
 import { fetchExams, syncExamCache, API_BASE } from '../api';
 import { getCachedExamIds, getCacheSize } from '../examCache';
-import { isExamCompleted } from '../completion';
+import { getCurrentUser, getUserInitials } from '../user';
+import { getBestExamScore } from '../completion';
 import {
   getMostRecentInProgress,
   getExamProgress,
 } from '../examProgress';
+import { isExamCompleted } from '../completion';
 import type { ExamSummary } from '../types';
 
 const FONT = "'Plus Jakarta Sans', sans-serif";
@@ -89,9 +91,10 @@ export default function Exams() {
   const continueExamMeta = continueExam
     ? exams.find((e) => e.id === continueExam.examId)
     : null;
+  const user = getCurrentUser() ?? 'AWS';
 
   return (
-    <div className="min-h-screen bg-background" style={{ fontFamily: FONT }}>
+    <div style={{ fontFamily: FONT }}>
       <header className="bg-white border-b border-border sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -102,7 +105,7 @@ export default function Exams() {
           </div>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
-              AWS
+              {getUserInitials(user)}
             </div>
           </div>
         </div>
@@ -202,6 +205,7 @@ export default function Exams() {
           {filtered.map((exam, index) => {
             const { icon: Icon, color } = getExamVisual(index);
             const completed = isExamCompleted(exam.id);
+            const bestScore = getBestExamScore(exam.id);
             const progress = getExamProgress(exam.id);
             const inProgress = !completed && progress !== null;
             const isCachedOffline = cachedIds.includes(exam.id);
@@ -267,7 +271,9 @@ export default function Exams() {
                         {exam.questionCount} Qs
                       </span>
                       {completed && (
-                        <span className="text-green-600 font-semibold">Review anytime</span>
+                        <span className="text-green-600 font-semibold">
+                          {bestScore !== null ? `Best: ${bestScore}%` : 'Review anytime'}
+                        </span>
                       )}
                     </div>
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">

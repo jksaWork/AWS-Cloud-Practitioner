@@ -183,9 +183,7 @@
     line-height: 1.5;
   }
 
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

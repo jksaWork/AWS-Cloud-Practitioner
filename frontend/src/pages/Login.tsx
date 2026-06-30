@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Award, Users } from 'lucide-react';
+import { setCurrentUser } from '../user';
 
 const FONT = "'Plus Jakarta Sans', sans-serif";
 
@@ -18,7 +19,8 @@ export default function Login() {
       return;
     }
     setLoading(true);
-    setTimeout(() => navigate('/exams'), 800);
+    setCurrentUser(username.trim());
+    setTimeout(() => navigate('/dashboard'), 800);
   }
 
   return (

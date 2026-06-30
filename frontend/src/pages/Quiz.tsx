@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Clock, CheckCircle2, XCircle, ChevronRight, Flag, Copy, Check } from 'lucide-react';
 import { fetchExam, API_BASE } from '../api';
 import { markExamCompleted, isExamCompleted } from '../completion';
@@ -28,8 +28,10 @@ function emptyAnswers(count: number): number[][] {
 
 export default function Quiz() {
   const { examId } = useParams<{ examId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const numericExamId = Number(examId);
+  const isRetry = searchParams.get('retry') === '1';
 
   const [examTitle, setExamTitle] = useState('Quiz');
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -56,7 +58,7 @@ export default function Quiz() {
         setQuestions(data.questions);
 
         const completed = isExamCompleted(numericExamId);
-        setIsReviewMode(completed);
+        setIsReviewMode(completed && !isRetry);
 
         if (completed) {
           setAnswers(emptyAnswers(data.questions.length));
@@ -83,7 +85,7 @@ export default function Quiz() {
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [examId, numericExamId]);
+  }, [examId, numericExamId, isRetry]);
 
   const persistProgress = useCallback(() => {
     if (loading || questions.length === 0 || isReviewMode) return;
@@ -173,7 +175,7 @@ export default function Quiz() {
       ).length;
 
       if (!isReviewMode) {
-        markExamCompleted(numericExamId);
+        markExamCompleted(numericExamId, score, questions.length);
         rotateCacheAfterCompletion(numericExamId, API_BASE).catch(() => {});
       }
 
